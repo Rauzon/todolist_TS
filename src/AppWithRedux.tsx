@@ -1,7 +1,6 @@
 import React, {useCallback, useEffect} from 'react'
 import './App.css';
 import {Todolist} from './Todolist';
-import {v1} from 'uuid';
 import {AddItemForm} from './AddItemForm';
 import {
     AppBar,
@@ -33,16 +32,21 @@ export type TasksStateType = {
     [key: string]: Array<TaskType>
 }
 
+type AppPropsType = {
+    demo?: boolean
+}
 
-function AppWithRedux() {
-    let todolistId1 = v1();
-    let todolistId2 = v1();
+export function AppWithRedux({demo=false,...props}:AppPropsType) {
 
     const todolists = useSelector<AppRootStateType, Array<TodolistDomainType>>(state => state.todolists)
     const tasks = useSelector<AppRootStateType, TasksStateType>(state => state.tasks)
     const dispatch = useDispatch();
 
     useEffect(() => {
+        if(demo){
+            return
+        }
+
         dispatch(setTodoListThunk())
     },[])
 
@@ -121,6 +125,7 @@ function AppWithRedux() {
                                         removeTodolist={removeTodolist}
                                         changeTaskTitle={changeTaskTitle}
                                         changeTodolistTitle={changeTodolistTitle}
+                                        demo={demo}
                                     />
                                 </Paper>
                             </Grid>
@@ -131,5 +136,3 @@ function AppWithRedux() {
         </div>
     );
 }
-
-export default AppWithRedux;

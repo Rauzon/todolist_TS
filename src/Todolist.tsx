@@ -23,10 +23,11 @@ type PropsType = {
     removeTodolist: (id: string) => void
     changeTodolistTitle: (id: string, newTitle: string) => void
     filter: FilterValuesType
+    demo?: boolean
 
 }
 
-export const Todolist = React.memo(function (props: PropsType) {
+export const Todolist = React.memo(function ({demo=false,...props}: PropsType) {
     console.log('Todolist called')
 
     const addTask = useCallback((title: string) => {
@@ -47,6 +48,9 @@ export const Todolist = React.memo(function (props: PropsType) {
     let dispatch = useDispatch()
 
     useEffect(() => {
+        if(demo){
+            return
+        }
         dispatch(setTasksThunk(props.id))
     },[props.id])
 
@@ -59,13 +63,15 @@ export const Todolist = React.memo(function (props: PropsType) {
         tasksForTodolist = props.tasks.filter(t => t.status === TaskStatuses.Completed)
     }
 
+
+
     return <div>
         <h3><EditableSpan value={props.title} onChange={changeTodolistTitle}/>
             <IconButton onClick={removeTodolist} disabled={props.entityStatus === 'loading'}>
                 <Delete/>
             </IconButton>
         </h3>
-        <AddItemForm addItem={addTask}/>
+        <AddItemForm addItem={addTask} disabled={(props.entityStatus === 'loading') && true}/>
         <div>
             {
                 tasksForTodolist.map(t => <Task key={t.id} task={t} todolistId={props.id}
@@ -92,5 +98,3 @@ export const Todolist = React.memo(function (props: PropsType) {
         </div>
     </div>
 })
-
-

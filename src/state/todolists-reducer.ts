@@ -35,7 +35,7 @@ type ActionsType = RemoveTodolistActionType | AddTodolistActionType
     | SetTodolistActionType
     | ChangeTodoListActionType
 
-const initialState: Array<TodolistDomainType> = []
+const initialState: Array<TodolistDomainType> = [];
 
 export type FilterValuesType = "all" | "active" | "completed";
 export type TodolistDomainType = TodolistType & {

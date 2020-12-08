@@ -15,6 +15,15 @@ export const setTasksThunk: SetTasksThunkType = (todolistId) => {
         todolistsAPI.getTasks(todolistId)
             .then(res => {
                 dispatch(setTaskAC(res.data.items, todolistId))
+                dispatch(setAppStatus('succeeded'))
+            })
+            .catch(err => {
+                if (err.message) {
+                    dispatch(setAppError(err.message))
+                } else {
+                    dispatch(setAppError(err))
+                }
+                dispatch(setAppStatus('failed'))
             })
     }
 }
@@ -23,13 +32,27 @@ export const cteateTaskThunk: CreateTasksThunkType = (title, todolistId) => {
         dispatch(setAppStatus("loading"))
         todolistsAPI.createTask(todolistId, title)
             .then(res => {
-                if(res.data.resultCode === 0){
+                if (res.data.resultCode === 0) {
                     dispatch(addTaskAC(res.data.data.item))
                     dispatch(setAppStatus("succeeded"))
+                } else {
+                    if (res.data.messages.length) {
+                        dispatch(setAppError(res.data.messages[0]))
+                    } else {
+                        dispatch(setAppError('some error'))
+                    }
                 }
-                else{
-                    dispatch(setAppError(res.data.messages[0]))
+            })
+            .catch((err) => {
+                if (err.message) {
+                    dispatch(setAppError(err.message))
+                } else {
+                    dispatch(setAppError(err))
                 }
+                dispatch(setAppStatus('failed'))
+            })
+            .finally(() => {
+                dispatch(setAppStatus("succeeded"))
             })
     }
 }
@@ -41,7 +64,22 @@ export const deleteTaskThunk: DeleteTasksThunkType = (todolistId, taskId) => {
                 if (res.data.resultCode === 0) {
                     dispatch(removeTaskAC(taskId, todolistId))
                     dispatch(setAppStatus("succeeded"))
+                } else {
+                    if (res.data.messages.length) {
+                        dispatch(setAppError(res.data.messages[0]))
+                    } else {
+                        dispatch(setAppError('some error with removing of task'))
+                    }
+                    dispatch(setAppStatus('failed'))
                 }
+            })
+            .catch(err => {
+                if (err.message) {
+                    dispatch(setAppError(err.message))
+                } else {
+                    dispatch(setAppError('some error with removing of task'))
+                }
+                dispatch(setAppStatus('failed'))
             })
     }
 }
@@ -76,8 +114,25 @@ export const UpdateTaskThunk: UpdateTitleTaskThunkType = (todolistId, taskId, mo
 
             todolistsAPI.updateTask(todolistId, taskId, apiModel)
                 .then(res => {
-                    debugger
-                    dispatch(updateTaskAC(taskId, todolistId, res.data.data.item))
+                    if (res.data.resultCode === 0) {
+                        dispatch(updateTaskAC(taskId, todolistId, res.data.data.item))
+                        setAppStatus('succeeded')
+                    } else {
+                        if (res.data.messages.length) {
+                            dispatch(setAppError(res.data.messages[0]))
+                        } else {
+                            dispatch(setAppError('something error with updating of task'))
+                        }
+                        setAppStatus('failed')
+                    }
+                })
+                .catch(err => {
+                    if (err.message) {
+                        dispatch(setAppError(err.message))
+                    } else {
+                        dispatch(setAppError('something error with updating of task'))
+                    }
+                    setAppStatus('failed')
                 })
         }
 
