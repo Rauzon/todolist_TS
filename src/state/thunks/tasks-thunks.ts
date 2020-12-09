@@ -3,6 +3,7 @@ import {todolistsAPI, UpdateTaskModelType} from "../../api/todolists-api";
 import {addTaskAC, removeTaskAC, setTaskAC, updateTaskAC} from "../tasks-reducer";
 import {AppRootStateType} from "../store";
 import {setAppError, setAppStatus} from "../app-reducer";
+import {thunkErrorHandler, thunkServerErrorHandler} from "../thunksUtils/errorHandlers";
 
 type SetTasksThunkType = (todolistId: string) => Function
 type CreateTasksThunkType = (title: string, todolistId: string) => Function
@@ -36,23 +37,11 @@ export const cteateTaskThunk: CreateTasksThunkType = (title, todolistId) => {
                     dispatch(addTaskAC(res.data.data.item))
                     dispatch(setAppStatus("succeeded"))
                 } else {
-                    if (res.data.messages.length) {
-                        dispatch(setAppError(res.data.messages[0]))
-                    } else {
-                        dispatch(setAppError('some error'))
-                    }
+                    thunkErrorHandler(res.data, dispatch)
                 }
             })
             .catch((err) => {
-                if (err.message) {
-                    dispatch(setAppError(err.message))
-                } else {
-                    dispatch(setAppError(err))
-                }
-                dispatch(setAppStatus('failed'))
-            })
-            .finally(() => {
-                dispatch(setAppStatus("succeeded"))
+                thunkServerErrorHandler(err, dispatch)
             })
     }
 }
@@ -65,21 +54,11 @@ export const deleteTaskThunk: DeleteTasksThunkType = (todolistId, taskId) => {
                     dispatch(removeTaskAC(taskId, todolistId))
                     dispatch(setAppStatus("succeeded"))
                 } else {
-                    if (res.data.messages.length) {
-                        dispatch(setAppError(res.data.messages[0]))
-                    } else {
-                        dispatch(setAppError('some error with removing of task'))
-                    }
-                    dispatch(setAppStatus('failed'))
+                    thunkErrorHandler(res.data, dispatch)
                 }
             })
             .catch(err => {
-                if (err.message) {
-                    dispatch(setAppError(err.message))
-                } else {
-                    dispatch(setAppError('some error with removing of task'))
-                }
-                dispatch(setAppStatus('failed'))
+                thunkServerErrorHandler(err, dispatch)
             })
     }
 }
@@ -118,21 +97,11 @@ export const UpdateTaskThunk: UpdateTitleTaskThunkType = (todolistId, taskId, mo
                         dispatch(updateTaskAC(taskId, todolistId, res.data.data.item))
                         setAppStatus('succeeded')
                     } else {
-                        if (res.data.messages.length) {
-                            dispatch(setAppError(res.data.messages[0]))
-                        } else {
-                            dispatch(setAppError('something error with updating of task'))
-                        }
-                        setAppStatus('failed')
+                        thunkErrorHandler(res.data,dispatch)
                     }
                 })
                 .catch(err => {
-                    if (err.message) {
-                        dispatch(setAppError(err.message))
-                    } else {
-                        dispatch(setAppError('something error with updating of task'))
-                    }
-                    setAppStatus('failed')
+                    thunkServerErrorHandler(err, dispatch)
                 })
         }
 

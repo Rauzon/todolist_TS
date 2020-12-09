@@ -4,7 +4,7 @@ import {
     changeTodolistTitleAC, FilterValuesType,
     removeTodolistAC, TodolistDomainType,
     todolistsReducer,
-    setTodolistAC
+    setTodolistAC, changeTodoListEntityAC
 } from './todolists-reducer'
 import {v1} from 'uuid'
 import {action} from "@storybook/addon-actions";
@@ -17,8 +17,8 @@ beforeEach(() => {
     todolistId1 = v1()
     todolistId2 = v1()
     startState = [
-        {id: todolistId1, title: 'What to learn', filter: 'all', addedDate: '', order: 0},
-        {id: todolistId2, title: 'What to buy', filter: 'all', addedDate: '', order: 0}
+        {id: todolistId1, title: 'What to learn', filter: 'all', addedDate: '', entityStatus: 'idle', order: 0},
+        {id: todolistId2, title: 'What to buy', filter: 'all', addedDate: '', entityStatus: "idle", order: 0}
     ]
 })
 
@@ -30,13 +30,29 @@ test('correct todolist should be removed', () => {
 })
 
 test('correct todolist should be added', () => {
-    let newTodolistTitle = 'New Todolist'
+    let newTodolistTitle = {
+        id: 'new todolist',
+        title: 'how to find anything',
+        addedDate: '6-06-66',
+        order: 2,
+    }
 
     const endState = todolistsReducer(startState, addTodolistAC(newTodolistTitle))
 
+    let expectedState = {
+        id: 'new todolist',
+        title: 'how to find anything',
+        addedDate: '6-06-66',
+        order: 2,
+        filter: "all",
+        entityStatus: "idle",
+    }
+
+
     expect(endState.length).toBe(3)
-    expect(endState[0].title).toBe(newTodolistTitle)
+    expect(endState[0]).toEqual(expectedState)
     expect(endState[0].filter).toBe('all')
+    expect(endState[0].entityStatus).toBe('idle')
 })
 
 test('correct todolist should change its name', () => {
@@ -67,6 +83,23 @@ test('correct getting todolists', () => {
     const endState = todolistsReducer([], action)
 
     expect(endState.length).toBe(2)
+})
+test('should be change todolist\'s entityStatus', () => {
+
+    let action = changeTodoListEntityAC('succeeded', todolistId1)
+
+    const endState = todolistsReducer(startState, action)
+
+    let expectedState = {
+        id: todolistId1,
+        title: 'What to learn',
+        filter: 'all',
+        addedDate: '',
+        entityStatus: 'succeeded',
+        order: 0
+    };
+
+    expect(endState[0]).toEqual(expectedState)
 })
 
 

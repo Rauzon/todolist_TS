@@ -8,6 +8,7 @@ import {
 } from "../todolists-reducer";
 import {Dispatch} from "redux";
 import {setAppError, setAppStatus} from "../app-reducer";
+import {thunkErrorHandler, thunkServerErrorHandler} from "../thunksUtils/errorHandlers";
 
 type SetTodoListThunkType = () => Function
 type DeleteTodoListThunkType = (todolistId: string) => Function
@@ -38,21 +39,11 @@ export const deleteTodoListThunk: DeleteTodoListThunkType = (todolistId) => {
                     dispatch(removeTodolistAC(todolistId))
                     dispatch(setAppStatus("succeeded"))
                 } else {
-                    if (res.data.messages.length) {
-                        dispatch(setAppError(res.data.messages[0]))
-                    } else {
-                        dispatch(setAppError('some error'))
-                    }
-                    dispatch(setAppStatus('failed'))
+                    thunkErrorHandler(res.data, dispatch)
                 }
             })
             .catch(err => {
-                if (err.message) {
-                    dispatch(setAppError(err.message))
-                } else {
-                    dispatch(setAppError('some propblem with removing of todolist'))
-                }
-                dispatch(setAppStatus('failed'))
+                thunkServerErrorHandler(err, dispatch)
             })
 
     }
@@ -69,13 +60,11 @@ export const createTodoListThunk: CreateTodoListThunkType = (title) => {
                         dispatch(addTodolistAC(res.data.data.item))
                         dispatch(setAppStatus("succeeded"))
                     } else {
-                        dispatch(setAppError(res.data.messages[0]))
-                        dispatch(setAppStatus("failed"))
+                        thunkErrorHandler(res.data, dispatch)
                     }
                 })
         } catch (err) {
-            dispatch(setAppStatus("succeeded"))
-            throw Error(err)
+            thunkServerErrorHandler(err, dispatch)
         }
     }
 }

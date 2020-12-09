@@ -36,19 +36,20 @@ type AppPropsType = {
     demo?: boolean
 }
 
-export function AppWithRedux({demo=false,...props}:AppPropsType) {
+export function AppWithRedux({demo = false, ...props}: AppPropsType) {
 
     const todolists = useSelector<AppRootStateType, Array<TodolistDomainType>>(state => state.todolists)
     const tasks = useSelector<AppRootStateType, TasksStateType>(state => state.tasks)
+    const status = useSelector((state: AppRootStateType) => state.app.status)
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if(demo){
+        if (demo) {
             return
         }
 
         dispatch(setTodoListThunk())
-    },[])
+    }, [])
 
     const removeTask = useCallback(function (id: string, todolistId: string) {
         dispatch(deleteTaskThunk(todolistId, id));
@@ -83,9 +84,6 @@ export function AppWithRedux({demo=false,...props}:AppPropsType) {
         dispatch(createTodoListThunk(title));
     }, [dispatch]);
 
-
-    const status = useSelector((state: AppRootStateType) =>state.app.status)
-
     return (
         <div className="App">
             <AppBar position="static">
@@ -100,10 +98,10 @@ export function AppWithRedux({demo=false,...props}:AppPropsType) {
                 </Toolbar>
             </AppBar>
             {status === 'loading' && <LinearProgress/>}
-            <ErrorSnackbar />
+            <ErrorSnackbar/>
             <Container fixed>
                 <Grid container style={{padding: "20px"}}>
-                    <AddItemForm addItem={addTodolist} />
+                    <AddItemForm addItem={addTodolist}/>
                 </Grid>
                 <Grid container spacing={3}>
                     {
