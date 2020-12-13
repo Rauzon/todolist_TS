@@ -1,10 +1,11 @@
-import {appReducer, InitialStateType, setAppError, setAppStatus} from './app-reducer';
+import {appReducer, InitialStateType, setAppError, setAppStatus, setIsInitialized} from './app-reducer';
 
 let startState: InitialStateType;
 beforeEach(() => {
     startState = {
         status: 'idle',
-        error: null
+        error: null,
+        isInitialized:false
     }
 });
 
@@ -34,4 +35,17 @@ test('correct task should be added to correct array', () => {
 
     expect(endState).toEqual(expectedState);
     expect(endState2.status).toBe('succeeded');
+});
+test('should set isInitialized value to true', () => {
+    const action = setIsInitialized(true);
+
+    const endState = appReducer(startState, action)
+
+    const expectedState = {
+        status: 'idle',
+        error: null,
+        isInitialized: true
+    }
+
+    expect(endState).toEqual(expectedState);
 });

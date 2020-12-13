@@ -24,7 +24,9 @@ export const setTodoListThunk: SetTodoListThunkType = () => {
                 dispatch(setTodolistAC(res.data))
                 dispatch(setAppStatus("succeeded"))
             })
-
+            .catch((err) => {
+                thunkServerErrorHandler(err, dispatch)
+            })
     }
 }
 

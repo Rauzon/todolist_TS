@@ -1,26 +1,31 @@
+import {authAPI, LoginType} from "../../api/todolists-api";
 import {Dispatch} from "redux";
-import {todolistsAPI} from "../../api/todolists-api";
-import {addTaskAC, setTaskAC} from "../tasks-reducer";
+import {ActionsAuthType, setIsLoggedIn} from "../auth-reducer";
+import {ActionsAppType, setAppStatus, setIsInitialized} from "../app-reducer";
+import {thunkErrorHandler, thunkServerErrorHandler} from "../thunksUtils/errorHandlers";
 
-type SetTasksThunkType = (todolistId: string) => Function
-type CreateTasksThunkType = (title: string, todolistId: string) => Function
+//check your authorization
+export const initializeAppThunk = () => {
 
-
-export const setTasksThunk: SetTasksThunkType = (todolistId) => {
-
-    return (dispatch: Dispatch) => {
-        todolistsAPI.getTasks(todolistId)
+    return (dispatch: Dispatch<ActionsAuthType | ActionsAppType>) => {
+        dispatch(setAppStatus("loading"))
+        authAPI.auth()
             .then(res => {
-                dispatch(setTaskAC(res.data.items, todolistId))
+                if (res.data.resultCode === 0) {
+                    dispatch(setIsLoggedIn(true))
+                    dispatch(setAppStatus("succeeded"))
+                } else {
+                    thunkErrorHandler(res.data, dispatch)
+                }
+                dispatch(setIsInitialized(true))
+            })
+            .catch((err) => {
+                thunkServerErrorHandler(err, dispatch)
             })
     }
 }
-export const cteateTaskThunk: CreateTasksThunkType = (title, todolistId) => {
-    return (dispatch: Dispatch) => {
-        todolistsAPI.createTask(todolistId, title)
-            .then(res => {
-                dispatch(addTaskAC(res.data.data.item))
-            })
-    }
-}
+
+
+
+
 

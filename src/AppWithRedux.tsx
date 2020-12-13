@@ -2,18 +2,7 @@ import React, {useCallback, useEffect} from 'react'
 import './App.css';
 import {Todolist} from './Todolist';
 import {AddItemForm} from './AddItemForm';
-import {
-    AppBar,
-    Button,
-    Container,
-    Grid,
-    IconButton,
-    LinearProgress,
-    Paper,
-    Toolbar,
-    Typography
-} from '@material-ui/core';
-import {Menu} from '@material-ui/icons';
+import {CircularProgress, Container, Grid, LinearProgress, Paper} from '@material-ui/core';
 import {changeTodolistFilterAC, FilterValuesType, TodolistDomainType} from './state/todolists-reducer'
 import {useDispatch, useSelector} from 'react-redux';
 import {AppRootStateType} from './state/store';
@@ -26,8 +15,11 @@ import {
 } from "./state/thunks/todolist-thunks";
 import {cteateTaskThunk, deleteTaskThunk, UpdateTaskThunk} from "./state/thunks/tasks-thunks";
 import {ErrorSnackbar} from "./components/ErrorSnackBar";
-import {Route} from 'react-router-dom';
+import {Redirect, Route} from 'react-router-dom';
 import {Login} from "./login/Login";
+import {RequestStatusType} from "./state/app-reducer";
+import {initializeAppThunk} from './state/thunks/app-thunks';
+import {AppBarComponent} from "./components/AppBarComponent";
 
 
 export type TasksStateType = {
@@ -42,15 +34,21 @@ export function AppWithRedux({demo = false, ...props}: AppPropsType) {
 
     const todolists = useSelector<AppRootStateType, Array<TodolistDomainType>>(state => state.todolists)
     const tasks = useSelector<AppRootStateType, TasksStateType>(state => state.tasks)
-    const status = useSelector((state: AppRootStateType) => state.app.status)
+    const status = useSelector<AppRootStateType, RequestStatusType>((state: AppRootStateType) => state.app.status)
+    const isLoggedIn = useSelector<AppRootStateType, boolean>(state => state.auth.isLoggedIn)
+    const isInitializedApp = useSelector<AppRootStateType, boolean>(state => state.app.isInitialized)
     const dispatch = useDispatch();
 
     useEffect(() => {
         if (demo) {
             return
         }
-
         dispatch(setTodoListThunk())
+    }, [isLoggedIn])
+
+    //for initialization
+    useEffect(() => {
+        dispatch(initializeAppThunk())
     }, [])
 
     const removeTask = useCallback(function (id: string, todolistId: string) {
@@ -86,22 +84,21 @@ export function AppWithRedux({demo = false, ...props}: AppPropsType) {
         dispatch(createTodoListThunk(title));
     }, [dispatch]);
 
+    if (!isInitializedApp) {
+        return <div className={'app__progress_circle'}>
+            <CircularProgress/>
+        </div>
+    }
+
     return (
         <div className="App">
-            <AppBar position="static">
-                <Toolbar>
-                    <IconButton edge="start" color="inherit" aria-label="menu">
-                        <Menu/>
-                    </IconButton>
-                    <Typography variant="h6">
-                        News
-                    </Typography>
-                    <Button color="inherit">Login</Button>
-                </Toolbar>
-            </AppBar>
+            <AppBarComponent />
             {status === 'loading' && <LinearProgress/>}
             <ErrorSnackbar/>
             <Route path={'/login'} render={() => <Login/>}/>
+            {
+                !isLoggedIn && <Redirect to={'/login'}/>
+            }
             <Route exact path={'/'} render={() => <Container fixed>
                 <Grid container style={{padding: "20px"}}>
                     <AddItemForm addItem={addTodolist}/>

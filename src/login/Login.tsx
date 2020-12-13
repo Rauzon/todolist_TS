@@ -2,7 +2,13 @@ import React from 'react'
 import {Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel, TextField, Button, Grid} from '@material-ui/core'
 import {useFormik} from "formik";
 import * as yup from 'yup';
-//
+import {useDispatch, useSelector} from "react-redux";
+import {loginThunk} from "../state/thunks/auth-thunks";
+import {AppRootStateType} from "../state/store";
+import { Redirect } from 'react-router-dom';
+
+
+
 type LoginPropsType = {}
 
 const validationSchema = yup.object().shape({
@@ -19,6 +25,8 @@ const validationSchema = yup.object().shape({
 
 export const Login: React.FC<LoginPropsType> = (props) => {
 
+    const isLoggedIn = useSelector<AppRootStateType, boolean>(state => state.auth.isLoggedIn)
+    const dispatch = useDispatch()
 
     const formik = useFormik({
         validationSchema,
@@ -28,12 +36,16 @@ export const Login: React.FC<LoginPropsType> = (props) => {
             rememberMe: false,
         },
         onSubmit: (values) => {
-            alert(JSON.stringify(values));
+            dispatch(loginThunk(values));
         },
     });
 
     const errorStyle = {
         color: 'red',
+    }
+
+    if(isLoggedIn){
+        return <Redirect to={'/'} />
     }
 
     return <Grid container justify="center">
