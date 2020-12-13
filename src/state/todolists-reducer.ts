@@ -97,4 +97,3 @@ export const setTodolistAC = (todolists: TodolistType[]): SetTodolistActionType 
 export const changeTodoListEntityAC = (entityStatus: RequestStatusType, todolistId: string):ChangeTodoListActionType => {
     return {type: "CHANGE_TODOLIST_ENTITY_STATUS", entityStatus, todolistId}
 }
-

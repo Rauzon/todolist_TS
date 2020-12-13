@@ -26,6 +26,8 @@ import {
 } from "./state/thunks/todolist-thunks";
 import {cteateTaskThunk, deleteTaskThunk, UpdateTaskThunk} from "./state/thunks/tasks-thunks";
 import {ErrorSnackbar} from "./components/ErrorSnackBar";
+import {Route} from 'react-router-dom';
+import {Login} from "./login/Login";
 
 
 export type TasksStateType = {
@@ -99,7 +101,8 @@ export function AppWithRedux({demo = false, ...props}: AppPropsType) {
             </AppBar>
             {status === 'loading' && <LinearProgress/>}
             <ErrorSnackbar/>
-            <Container fixed>
+            <Route path={'/login'} render={() => <Login/>}/>
+            <Route exact path={'/'} render={() => <Container fixed>
                 <Grid container style={{padding: "20px"}}>
                     <AddItemForm addItem={addTodolist}/>
                 </Grid>
@@ -130,7 +133,8 @@ export function AppWithRedux({demo = false, ...props}: AppPropsType) {
                         })
                     }
                 </Grid>
-            </Container>
+            </Container>}/>
+
         </div>
     );
 }
