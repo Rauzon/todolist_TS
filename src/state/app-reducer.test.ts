@@ -16,7 +16,8 @@ test('should be set error to state', () => {
 
     const expectedState = {
         status: 'idle',
-        error: 'some Error'
+        error: 'some Error',
+        isInitialized:false
     }
 
     expect(endState).toEqual(expectedState);
@@ -30,7 +31,8 @@ test('correct task should be added to correct array', () => {
 
     const expectedState = {
         status: 'loading',
-        error: null
+        error: null,
+        isInitialized:false
     }
 
     expect(endState).toEqual(expectedState);
