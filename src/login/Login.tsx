@@ -13,7 +13,7 @@ type LoginPropsType = {}
 
 const validationSchema = yup.object().shape({
     email: yup.string()
-        .max(25, 'Must be 25 characters or less')
+        .max(35, 'Must be 25 characters or less')
         .required('email is required')
         .email('email is incorrect'),
     password: yup.string()
@@ -59,8 +59,8 @@ export const Login: React.FC<LoginPropsType> = (props) => {
                             </a>
                         </p>
                         <p>or use common test account credentials:</p>
-                        <p>Email: free@samuraijs.com</p>
-                        <p>Password: free</p>
+                        <p>Email: vladby86@gmail.com</p>
+                        <p>Password: HardPassword_2020</p>
                     </FormLabel>
                     <FormGroup>
                         <TextField
