@@ -68,7 +68,7 @@ export function AppWithRedux({demo = false, ...props}: AppPropsType) {
     }, []);
 
     const changeFilter = useCallback(function (value: FilterValuesType, todolistId: string) {
-        const action = changeTodolistFilterAC(todolistId, value);
+        const action = changeTodolistFilterAC({id:todolistId, filter:value});
         dispatch(action);
     }, []);
 

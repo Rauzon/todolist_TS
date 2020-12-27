@@ -1,6 +1,4 @@
-enum AuthConsts {
-    IS_LOGGED_IN = 'AUTH/IS_LOGGED_IN',
-}
+import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 
 
 export type InitialAuthStateType = {
@@ -11,16 +9,17 @@ const initialState: InitialAuthStateType = {
     isLoggedIn: false
 }
 
-export const authReducer = (state: InitialAuthStateType = initialState, action: ActionsAuthType): InitialAuthStateType => {
-    switch (action.type) {
-        case AuthConsts.IS_LOGGED_IN:
-            return {...state, isLoggedIn: action.isLoggedIn}
-        default:
-            return state
+const authSlice = createSlice({
+    name: 'auth',
+    initialState,
+    reducers: {
+        setIsLoggedIn(state, action: PayloadAction<{ isLoggedIn: boolean }>) {
+            state.isLoggedIn = action.payload.isLoggedIn
+        }
     }
-}
+});
 
-export type ActionsAuthType = ReturnType<typeof setIsLoggedIn>
+export const authReducer = authSlice.reducer
 
 
-export const setIsLoggedIn = (isLoggedIn: boolean) => ({type: AuthConsts.IS_LOGGED_IN, isLoggedIn} as const)
+export const {setIsLoggedIn} = authSlice.actions

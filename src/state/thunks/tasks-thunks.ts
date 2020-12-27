@@ -15,8 +15,8 @@ export const setTasksThunk: SetTasksThunkType = (todolistId) => {
     return (dispatch: Dispatch) => {
         todolistsAPI.getTasks(todolistId)
             .then(res => {
-                dispatch(setTaskAC(res.data.items, todolistId))
-                dispatch(setAppStatus('succeeded'))
+                dispatch(setTaskAC({todolistId: todolistId, tasks: res.data.items}))
+                dispatch(setAppStatus({status: 'succeeded'}))
             })
             .catch(err => {
                 if (err.message) {
@@ -24,18 +24,18 @@ export const setTasksThunk: SetTasksThunkType = (todolistId) => {
                 } else {
                     dispatch(setAppError(err))
                 }
-                dispatch(setAppStatus('failed'))
+                dispatch(setAppStatus({status: 'failed'}))
             })
     }
 }
 export const cteateTaskThunk: CreateTasksThunkType = (title, todolistId) => {
     return (dispatch: Dispatch) => {
-        dispatch(setAppStatus("loading"))
+        dispatch(setAppStatus({status: 'loading'}))
         todolistsAPI.createTask(todolistId, title)
             .then(res => {
                 if (res.data.resultCode === 0) {
-                    dispatch(addTaskAC(res.data.data.item))
-                    dispatch(setAppStatus("succeeded"))
+                    dispatch(addTaskAC({task: res.data.data.item}))
+                    dispatch(setAppStatus({status: 'succeeded'}))
                 } else {
                     thunkErrorHandler(res.data, dispatch)
                 }
@@ -47,12 +47,12 @@ export const cteateTaskThunk: CreateTasksThunkType = (title, todolistId) => {
 }
 export const deleteTaskThunk: DeleteTasksThunkType = (todolistId, taskId) => {
     return (dispatch: Dispatch) => {
-        dispatch(setAppStatus("loading"))
+        dispatch(setAppStatus({status: 'loading'}))
         todolistsAPI.deleteTask(todolistId, taskId)
             .then(res => {
                 if (res.data.resultCode === 0) {
-                    dispatch(removeTaskAC(taskId, todolistId))
-                    dispatch(setAppStatus("succeeded"))
+                    dispatch(removeTaskAC({todolistId: todolistId, taskId: taskId}))
+                    dispatch(setAppStatus({status: 'succeeded'}))
                 } else {
                     thunkErrorHandler(res.data, dispatch)
                 }
@@ -94,10 +94,10 @@ export const UpdateTaskThunk: UpdateTitleTaskThunkType = (todolistId, taskId, mo
             todolistsAPI.updateTask(todolistId, taskId, apiModel)
                 .then(res => {
                     if (res.data.resultCode === 0) {
-                        dispatch(updateTaskAC(taskId, todolistId, res.data.data.item))
-                        setAppStatus('succeeded')
+                        dispatch(updateTaskAC({taskId, todolistId, task: res.data.data.item}))
+                        setAppStatus({status: 'succeeded'})
                     } else {
-                        thunkErrorHandler(res.data,dispatch)
+                        thunkErrorHandler(res.data, dispatch)
                     }
                 })
                 .catch(err => {

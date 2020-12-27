@@ -1,19 +1,19 @@
 import {Dispatch} from "redux";
 import {authAPI, LoginType} from "../../api/todolists-api";
-import {ActionsAuthType, setIsLoggedIn} from "../auth-reducer";
-import {ActionsAppType, setAppError, setAppStatus, setIsInitialized} from "../app-reducer";
+import {setIsLoggedIn} from "../auth-reducer";
+import {setAppStatus} from "../app-reducer";
 import {thunkErrorHandler, thunkServerErrorHandler} from "../thunksUtils/errorHandlers";
 
 
 export const loginThunk = (data: LoginType) => {
 
-    return (dispatch: Dispatch<ActionsAuthType | ActionsAppType>) => {
-        dispatch(setAppStatus("loading"))
+    return (dispatch: Dispatch) => {
+        dispatch(setAppStatus({status: 'loading'}))
         authAPI.login(data)
             .then(res => {
                 if (res.data.resultCode === 0) {
-                    dispatch(setIsLoggedIn(true))
-                    dispatch(setAppStatus("succeeded"))
+                    dispatch(setIsLoggedIn({isLoggedIn: true}))
+                    dispatch(setAppStatus({status: 'succeeded'}))
                 } else {
                     thunkErrorHandler(res.data, dispatch)
                 }
@@ -25,13 +25,13 @@ export const loginThunk = (data: LoginType) => {
 }
 export const logOutThunk = () => {
 
-    return (dispatch: Dispatch<ActionsAuthType | ActionsAppType>) => {
-        dispatch(setAppStatus("loading"))
+    return (dispatch: Dispatch) => {
+        dispatch(setAppStatus({status: 'loading'}))
         authAPI.logOut()
             .then(res => {
                 if (res.data.resultCode === 0) {
-                    dispatch(setIsLoggedIn(false))
-                    dispatch(setAppStatus("succeeded"))
+                    dispatch(setIsLoggedIn({isLoggedIn: false}))
+                    dispatch(setAppStatus({status: 'succeeded'}))
                 } else {
                     thunkErrorHandler(res.data, dispatch)
                 }
